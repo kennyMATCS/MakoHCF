@@ -40,16 +40,16 @@ public class ScoreboardHandler implements Listener {
 		scoreboard.add("&7&m" + StringUtils.repeat("-", 21) + " ", i);
 		i--;
 		
-		//checks if player has timer and if they do loops through all their timers and adds them to the scoreboard.
-		if (HCF.getInstance().getTimerHandler().getPlayerTimers(player) != null) {
-			for (Timer timer : HCF.getInstance().getTimerHandler().getPlayerTimers(player)) {
+		//checks if player has timers and if they do loops through all their timers and adds them to the scoreboard.
+		if (HCF.getInstance().getTimerHandler().getTimersFromPlayer(player) != null) {
+			for (Timer timer : HCF.getInstance().getTimerHandler().getTimersFromPlayer(player)) {
 				scoreboard.add(timer.getColor() + "&l" + timer.getName(), i);
 				i--;
 				scoreboard.add("  &c" + timer.getFormattedTime(), i);
 				i--;
-			}
+			}	
 		}
-		
+
 		scoreboard.add("&7&m " + StringUtils.repeat("-", 21), i);
 		i--;
 		

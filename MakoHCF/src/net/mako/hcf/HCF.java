@@ -1,5 +1,7 @@
 package net.mako.hcf;
 
+import java.io.File;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,6 +17,13 @@ public class HCF extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		this.instance = this;
+		
+		//creates config
+		File file = new File(getDataFolder(), "config.yml");
+		if (!file.exists()) {
+			this.getConfig().options().copyDefaults(true);
+			this.saveConfig();
+		}
 		
 		this.timerHandler = new TimerHandler();
 		this.scoreboardHandler = new ScoreboardHandler();

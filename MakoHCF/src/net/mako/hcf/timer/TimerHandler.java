@@ -18,18 +18,16 @@ import net.mako.hcf.HCF;
 import net.mako.hcf.timer.timers.PvPTimer;
 
 public class TimerHandler implements Listener {
-	private Map<Player, List<Timer>> playerTimers = new HashMap();
 	private List<Timer> timers = new ArrayList();
 	
 	public TimerHandler() {
+		//runs every seconds and checks through all timers and decrements them if they are running
 		BukkitTask runnable = Bukkit.getScheduler().runTaskTimer(HCF.getInstance(), new Runnable() {
 			@Override
 			public void run() {
-				for (List<Timer> timers : playerTimers.values()) {
-					for (Timer timer : timers) {
-						if (timer.isRunning()) {
-							timer.decrementTime();
-						}
+				for (Timer timer : timers) {
+					if (timer.isRunning()) {
+						timer.decrementTime();
 					}
 				}
 			}
@@ -40,49 +38,53 @@ public class TimerHandler implements Listener {
 		return timers;
 	}
 	
-	public Map<Player, List<Timer>> getPlayerTimers() {
+	//loops through all timers and returns the player timers
+	public List<PlayerTimer> getPlayerTimers() {
+		List<PlayerTimer> playerTimers = new ArrayList();
+		for (Timer timer : timers) {
+			if (timer instanceof PlayerTimer) {
+				PlayerTimer playerTimer = (PlayerTimer) timer;
+				playerTimers.add(playerTimer);
+			}
+		}
 		return playerTimers;
 	}
 	
-	public List<Timer> getPlayerTimers(Player player) {
-		if (playerTimers.containsKey(player)) {
-			return playerTimers.get(player);
+	//loops through all player timers and gets the timers from a specific player
+	public List<PlayerTimer> getTimersFromPlayer(Player player) {
+		List<PlayerTimer> playerTimers = new ArrayList();
+		for (PlayerTimer playerTimer : getPlayerTimers()) {
+			if (playerTimer.getPlayer().equals(player)) {
+				playerTimers.add(playerTimer);
+			}
 		}
-		return null;
-	}
-	
-	public void addPlayer(Player player, List<Timer> timers) {
-		playerTimers.put(player, timers);
-	}
-	
-	public boolean removePlayer(Player player) {
-		if (playerTimers.containsKey(player)) {
-			playerTimers.remove(player);
-			return true;
-		}
-		return false;
+		return playerTimers;
 	}
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event)  {
-		List<Timer> timers = new ArrayList();
-		PvPTimer timer = new PvPTimer();
+		PvPTimer timer = new PvPTimer(event.getPlayer());
 		timer.setRunning(true);
 		timers.add(timer);
-		playerTimers.put(event.getPlayer(), timers);
 	}
 	
+	//loops through timers, checks if its a player timer and if true removes it
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
-		if (playerTimers.containsKey(event.getPlayer())) {
-			playerTimers.remove(event.getPlayer());
+		for (Timer timer : timers) {
+			if (timer instanceof PlayerTimer) {
+				timers.remove(timer);
+			}
 		}
 	}
 	
+	//loops through timers, checks if its a player timer and if true removes it
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event) {
-		if (playerTimers.containsKey(event.getPlayer())) {
-			playerTimers.remove(event.getPlayer());
+		for (PlayerTimer playerTimer : getPlayerTimers()) {
+			if (playerTimer.getPlayer().equals(event.getPlayer())) {
+				timers.remove(playerTimer);
+			}
 		}
 	}
 }
