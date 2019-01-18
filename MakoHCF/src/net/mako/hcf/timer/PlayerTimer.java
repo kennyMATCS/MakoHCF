@@ -4,7 +4,7 @@ import java.sql.Time;
 
 import org.bukkit.entity.Player;
 
-public class PlayerTimer extends Timer {
+public abstract class PlayerTimer extends Timer {
 	private Player player;
 	
 	public PlayerTimer(String name, String color, Time time, Player player) {

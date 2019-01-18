@@ -1,10 +1,7 @@
 package net.mako.hcf.timer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,15 +20,27 @@ public class TimerHandler implements Listener {
 	public TimerHandler() {
 		//runs every seconds and checks through all timers and decrements them if they are running
 		BukkitTask runnable = Bukkit.getScheduler().runTaskTimer(HCF.getInstance(), new Runnable() {
+			int i = 0;
 			@Override
 			public void run() {
 				for (Timer timer : timers) {
+					//checks if its been 20 ticks and decrements time by a second
 					if (timer.isRunning()) {
-						timer.decrementTime();
+						if (i >= 20) {
+							timer.decrementTime();
+						}	
+						timer.tick();
 					}
+
+				}
+				//sets i back to 0 if a second has been decremented.
+				if (i >= 20) {
+					i = 0;
+				} else {	
+					i++;	
 				}
 			}
-		}, 0L, 20L);
+		}, 0L, 1L);
 	}
 	
 	public List<Timer> getTimers() {

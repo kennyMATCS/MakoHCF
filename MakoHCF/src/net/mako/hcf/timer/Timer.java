@@ -2,7 +2,7 @@ package net.mako.hcf.timer;
 
 import java.sql.Time;
 
-public class Timer {
+public abstract class Timer {
 	private String name;
 	private String color;
 	private Time time;
@@ -14,6 +14,8 @@ public class Timer {
 		this.time = time;
 		this.running = false;
 	}
+	
+	public abstract void tick();
 
 	public Time getTime() {
 		return time;

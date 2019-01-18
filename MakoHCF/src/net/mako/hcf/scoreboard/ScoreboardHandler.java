@@ -1,8 +1,6 @@
 package net.mako.hcf.scoreboard;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -30,31 +28,37 @@ public class ScoreboardHandler implements Listener {
 					updateScoreboard(player);
 				}
 			}
-		}, 0L, 20L);
+		}, 0L, 1L);
 	}
 	
 	public void updateScoreboard(Player player) {
 		SimpleScoreboard scoreboard = scoreboards.get(player);
 		int i = 15;
 		
+		//subtracting i by 1 for each text added to get the score.
 		scoreboard.add("&7&m" + StringUtils.repeat("-", 21) + " ", i);
 		i--;
 		
 		//checks if player has timers and if they do loops through all their timers and adds them to the scoreboard.
 		if (HCF.getInstance().getTimerHandler().getTimersFromPlayer(player) != null) {
 			for (Timer timer : HCF.getInstance().getTimerHandler().getTimersFromPlayer(player)) {
-				scoreboard.add(timer.getColor() + "&l" + timer.getName(), i);
+				scoreboard.add(timer.getColor() + timer.getName(), i);
 				i--;
-				scoreboard.add("  &c" + timer.getFormattedTime(), i);
+				scoreboard.add(" &f" + timer.getFormattedTime(), i);
 				i--;
 			}	
 		}
 
+		scoreboard.add(" ", i);
+		i--;
+		scoreboard.add("&c&omako.net", i);
+		i--;
 		scoreboard.add("&7&m " + StringUtils.repeat("-", 21), i);
 		i--;
+
 		
 		//if nothing on scoreboard return null
-		if (i == 13) {
+		if (i == 11) {
 			return;
 		}
 			
@@ -67,7 +71,7 @@ public class ScoreboardHandler implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event)  {
-		SimpleScoreboard scoreboard = new SimpleScoreboard("&6&lMakoHCF");
+		SimpleScoreboard scoreboard = new SimpleScoreboard(HCF.getInstance().getScoreboardTitle() + " &7[&4Map " + HCF.getInstance().getHCFMap() + "&7]");
 		scoreboard.send(event.getPlayer());
 		scoreboards.put(event.getPlayer(), scoreboard);
 	}
