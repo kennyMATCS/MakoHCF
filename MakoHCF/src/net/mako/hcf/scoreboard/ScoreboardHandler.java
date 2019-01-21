@@ -42,10 +42,12 @@ public class ScoreboardHandler implements Listener {
 		//checks if player has timers and if they do loops through all their timers and adds them to the scoreboard.
 		if (HCF.getInstance().getTimerHandler().getTimersFromPlayer(player) != null) {
 			for (Timer timer : HCF.getInstance().getTimerHandler().getTimersFromPlayer(player)) {
-				scoreboard.add(timer.getColor() + timer.getName(), i);
-				i--;
-				scoreboard.add(" &f" + timer.getFormattedTime(), i);
-				i--;
+				if (timer.isRunning() || timer.getDisplayWhilePaused()) {
+					scoreboard.add(timer.getColor() + timer.getName(), i);
+					i--;
+					scoreboard.add(" &f" + timer.getFormattedTime(), i);
+					i--;
+				}		
 			}	
 		}
 
@@ -57,11 +59,15 @@ public class ScoreboardHandler implements Listener {
 		i--;
 
 		
-		//if nothing on scoreboard return null
+		//if nothing on scoreboard, set the player to the main scoreboard and return
 		if (i == 11) {
+			if (!player.getScoreboard().equals(Bukkit.getScoreboardManager().getMainScoreboard()))
+				player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 			return;
 		}
 			
+		//sets the player scoreboard and updates it 
+		scoreboard.send(player);
 		scoreboard.update();
 	}
 	

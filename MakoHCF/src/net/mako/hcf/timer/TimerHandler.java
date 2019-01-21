@@ -47,6 +47,12 @@ public class TimerHandler implements Listener {
 		return timers;
 	}
 	
+	public void remove(Timer timer) {
+		if (timers.contains(timer)) {
+			timers.remove(timer);
+		}
+	}
+	
 	//loops through all timers and returns the player timers
 	public List<PlayerTimer> getPlayerTimers() {
 		List<PlayerTimer> playerTimers = new ArrayList();
@@ -70,10 +76,15 @@ public class TimerHandler implements Listener {
 		return playerTimers;
 	}
 	
+	public boolean hasTimer(Timer timer) {
+		if (timers.contains(timer))
+			return true;
+		return false;
+	}
+	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event)  {
 		PvPTimer timer = new PvPTimer(event.getPlayer());
-		timer.setRunning(true);
 		timers.add(timer);
 	}
 	

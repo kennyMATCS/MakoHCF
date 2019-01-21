@@ -3,3 +3,5 @@ version: 0.1
 main: net.mako.hcf.HCF
 author: kenny
 commands:
+ ping:
+ pvp:

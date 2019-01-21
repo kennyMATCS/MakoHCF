@@ -1,12 +1,17 @@
 scoreboard-title: '&c&lSquads'
 map: 1
 
+#The map kit
+map-kit:
+ protection: 1
+ sharpness: 2
+
 #Timer duration is measured in seconds.
 timers:
  pvp-timer: 1800
  pearl: 16
 
-#The spawn location; x and z are the coordinates of the corners.
+#The spawn location is the coordinates for where the player spawns in; the corners are the dimensions of the spawn around 0, 0
 spawn:
  corner-1:
   x: 75
@@ -14,3 +19,7 @@ spawn:
  corner-2:
   x: -74
   z: -74
+ spawn-location:
+  x: 0
+  y: 76
+  z: 0
