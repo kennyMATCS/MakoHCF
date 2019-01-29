@@ -8,15 +8,17 @@ public abstract class Timer {
 	private String name;
 	private String color;
 	private Time time;
+	private long originalTime;
 	private boolean running;
-	private boolean displayWhilePaused;
 	
 	public Timer(String name, String color, Time time) {
 		this.name = name;
-		this.color = color;
+		this.color = color;	
 		this.time = time;
+		this.originalTime = time.getTime();
 		this.running = false;
-		this.displayWhilePaused = false;
+		
+		//TODO: timer has reset
 	}
 	
 	public abstract void tick();
@@ -35,8 +37,8 @@ public abstract class Timer {
 		return color;
 	}
 	
-	public boolean getDisplayWhilePaused() {
-		return displayWhilePaused;
+	public long getOriginalTime() {
+		return originalTime;
 	}
 	
 	public String getFormattedTime() {
@@ -56,10 +58,6 @@ public abstract class Timer {
 		this.time = time;
 	}
 	
-	public void setDisplayWhilePaused(boolean bool) {
-		displayWhilePaused = bool;
-	}
-	
 	public void enable() {
 		this.running = true;
 		this.onEnable();
@@ -70,6 +68,11 @@ public abstract class Timer {
 		this.onDisable();
 	}
 	
+	//resets the time to the original time
+	public void reset() {
+		time.setTime(originalTime);
+	}
+	 
 	public TimerHandler getTimerHandler() {
 		return HCF.getInstance().getTimerHandler();
 	}

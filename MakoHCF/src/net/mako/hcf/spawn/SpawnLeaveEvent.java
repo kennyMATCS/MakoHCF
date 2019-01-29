@@ -34,6 +34,7 @@ public class SpawnLeaveEvent extends Event {
 		return timer;
 	}
 	
+	@Override
 	public HandlerList getHandlers() {
 		return HANDLERS;
 	}

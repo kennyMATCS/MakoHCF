@@ -10,7 +10,6 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -18,6 +17,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.mako.hcf.HCF;
@@ -27,10 +27,11 @@ import net.md_5.bungee.api.ChatColor;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 
 public class Spawn implements Listener {
-	private Map<Player, Boolean> inSpawn = new HashMap();
+	private Map<Player, Boolean> inSpawn = new HashMap<>();
 	
 	public Spawn() {
-		BukkitTask runnable = Bukkit.getScheduler().runTaskTimer(HCF.getInstance(), new Runnable() {
+		BukkitScheduler scheduler = Bukkit.getScheduler();
+		scheduler.scheduleSyncRepeatingTask(HCF.getInstance(), new Runnable() {
 			@Override
 			public void run() {
 				for (Player player : Bukkit.getOnlinePlayers()) {
@@ -53,42 +54,32 @@ public class Spawn implements Listener {
 					inSpawn.put(player, insideSpawn(player));
 					boolean isInSpawn = inSpawn.get(player);
 					//calls event based on if the player was in spawn or not before.
-					boolean hasPvPTimer = false;
 					if (wasInSpawn == false && isInSpawn == true) {
 						//checks if the player has pvp timer and stores it inside the event
-						for (Timer timer : HCF.getInstance().getTimerHandler().getTimersFromPlayer(player)) {
-							if (timer instanceof PvPTimer) {
-								SpawnEnterEvent spawnEnterEvent = new SpawnEnterEvent(player, (PvPTimer) timer);
-								Bukkit.getPluginManager().callEvent(spawnEnterEvent);
-								hasPvPTimer = true;
-								break;
-							} 
-						}
-						
-						if (!hasPvPTimer) {		
+						if (HCF.getInstance().getTimerHandler().getTimer(player, PvPTimer.class) != null) {
+							Timer timer = HCF.getInstance().getTimerHandler().getTimer(player, PvPTimer.class);
+							SpawnEnterEvent spawnEnterEvent = new SpawnEnterEvent(player, (PvPTimer) timer);
+							Bukkit.getPluginManager().callEvent(spawnEnterEvent);
+							break;
+						} else {
 							SpawnEnterEvent spawnEnterEvent = new SpawnEnterEvent(player);
 							Bukkit.getPluginManager().callEvent(spawnEnterEvent);
 						}
-						
 					} else if (wasInSpawn == true && isInSpawn == false) {
 						//checks if the player has pvp timer and stores it inside the event
-						for (Timer timer : HCF.getInstance().getTimerHandler().getTimersFromPlayer(player)) {
-							if (timer instanceof PvPTimer) {
-								SpawnLeaveEvent spawnLeaveEvent = new SpawnLeaveEvent(player, (PvPTimer) timer);
-								Bukkit.getPluginManager().callEvent(spawnLeaveEvent);
-								hasPvPTimer = true;
-								break;
-							} 
-						}
-						
-						if (!hasPvPTimer) {
+						if (HCF.getInstance().getTimerHandler().getTimer(player, PvPTimer.class) != null) {
+							Timer timer = HCF.getInstance().getTimerHandler().getTimer(player, PvPTimer.class);
+							SpawnLeaveEvent spawnLeaveEvent = new SpawnLeaveEvent(player, (PvPTimer) timer);
+							Bukkit.getPluginManager().callEvent(spawnLeaveEvent);
+							break;
+						} else {
 							SpawnLeaveEvent spawnLeaveEvent = new SpawnLeaveEvent(player);
 							Bukkit.getPluginManager().callEvent(spawnLeaveEvent);
 						}
 					} 
 				}
 			}
-		}, 0L, 1L);
+		}, 0L, 3L);
 	}
 	
 	//gets the corner one from the config
@@ -105,6 +96,24 @@ public class Spawn implements Listener {
 		int z = HCF.getInstance().getConfig().getInt("spawn.corner-2.z");
 		int[] corner = {x, z};
 		return corner;
+	}
+	
+	public int[] getFixedCornerOne() {
+		int corner1[] = getCornerOne();
+		
+		corner1[0] = corner1[0] < 0 ? corner1[0] - 1 : corner1[0] + 1;
+		corner1[1] = corner1[1] < 0 ? corner1[1] - 1 : corner1[1] + 1;
+		
+		return corner1;
+	}
+	
+	public int[] getFixedCornerTwo() {
+		int corner2[] = getCornerTwo();
+		
+		corner2[0] = corner2[0] < 0 ? corner2[0] - 1 : corner2[0] + 1;
+		corner2[1] = corner2[1] < 0 ? corner2[1] - 1 : corner2[1] + 1;
+		
+		return corner2;
 	}
 	
 	/*
@@ -158,7 +167,7 @@ public class Spawn implements Listener {
 		
 		//adds or subtracts one based on if the corner value is pos or neg so the player spawns in the middle of the block.
 		double x = HCF.getInstance().getConfig().getDouble("spawn.spawn-location.x") < 0 ? HCF.getInstance().getConfig().getDouble("spawn.spawn-location.x") - 0.5 : HCF.getInstance().getConfig().getDouble("spawn.spawn-location.x") + 0.5;
-		double z = HCF.getInstance().getConfig().getDouble("spawn.spawn-location.x") < 0 ? HCF.getInstance().getConfig().getDouble("spawn.spawn-location.x") - 0.5 : HCF.getInstance().getConfig().getDouble("spawn.spawn-location.x") + 0.5;
+		double z = HCF.getInstance().getConfig().getDouble("spawn.spawn-location.z") < 0 ? HCF.getInstance().getConfig().getDouble("spawn.spawn-location.z") - 0.5 : HCF.getInstance().getConfig().getDouble("spawn.spawn-location.z") + 0.5;
 		
 		player.teleport(new Location(Bukkit.getWorld("world"), x, HCF.getInstance().getConfig().getInt("spawn.spawn-location.y"), z, 0, 0));
 	}
@@ -187,7 +196,9 @@ public class Spawn implements Listener {
 	public void onBlockBreak(BlockBreakEvent event) { 
 		Player player = event.getPlayer();
 		if (insideSpawn(player) || insideSpawn(event.getBlock())) {
-			event.setCancelled(true);
+			if (insideSpawn(player) || insideSpawn(event.getBlock())) {
+				event.setCancelled(true);
+			}
 		}
 	}
 	

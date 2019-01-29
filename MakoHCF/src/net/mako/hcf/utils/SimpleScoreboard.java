@@ -13,7 +13,6 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-//hcriots simple scoreboard
 public class SimpleScoreboard {
 
     private static Map<String, OfflinePlayer> cache = new HashMap<>();
@@ -247,4 +246,12 @@ public class SimpleScoreboard {
             return Bukkit.getOfflinePlayer(name);
         }
     }
+
+	public Map<String, Integer> getScores() {
+		return scores;
+	}
+	
+	public void addRemoved(int i) {
+		this.removed.add(i);
+	}
 }

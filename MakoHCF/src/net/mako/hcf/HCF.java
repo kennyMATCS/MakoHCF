@@ -7,17 +7,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.mako.hcf.combat.CombatTag;
+import net.mako.hcf.combat.CombatTagWall;
 import net.mako.hcf.commands.PingCommand;
 import net.mako.hcf.commands.PvPCommand;
 import net.mako.hcf.scoreboard.ScoreboardHandler;
 import net.mako.hcf.spawn.Spawn;
 import net.mako.hcf.timer.TimerHandler;
-
+	
 public class HCF extends JavaPlugin {
 	private static HCF instance;
 	private TimerHandler timerHandler;
 	private ScoreboardHandler scoreboardHandler;
 	private Spawn spawn;
+	private CombatTagWall combatTagWall;
 	
 	@Override
 	public void onEnable() {
@@ -33,6 +35,7 @@ public class HCF extends JavaPlugin {
 		this.timerHandler = new TimerHandler();
 		this.scoreboardHandler = new ScoreboardHandler();
 		this.spawn = new Spawn();
+		this.combatTagWall = new CombatTagWall();
 		
 		this.getCommand("ping").setExecutor(new PingCommand());
 		this.getCommand("pvp").setExecutor(new PvPCommand());
@@ -41,6 +44,7 @@ public class HCF extends JavaPlugin {
 		Bukkit.getServer().getPluginManager().registerEvents(timerHandler, this);
 		Bukkit.getServer().getPluginManager().registerEvents(spawn, this);
 		Bukkit.getServer().getPluginManager().registerEvents(new CombatTag(), this);
+		Bukkit.getServer().getPluginManager().registerEvents(combatTagWall, this);
 	}
 	
 	@Override
@@ -72,5 +76,9 @@ public class HCF extends JavaPlugin {
 	
 	public Spawn getSpawn() {
 		return spawn;
+	}
+	
+	public CombatTagWall getCombatTagWall() {
+		return combatTagWall;
 	}
 }

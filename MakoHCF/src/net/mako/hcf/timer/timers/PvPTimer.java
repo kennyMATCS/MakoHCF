@@ -17,7 +17,6 @@ public class PvPTimer extends PlayerTimer implements Listener {
 	//TODO: register events per object opposed to per class
 	public PvPTimer(Player player) {
 		super("PvP Timer", "&a", new Time(0, 0, HCF.getInstance().getConfig().getInt("timers.pvp-timer")), player);
-		this.setDisplayWhilePaused(true);
 		Bukkit.getServer().getPluginManager().registerEvents(this, HCF.getInstance());
 	}
 
@@ -29,7 +28,6 @@ public class PvPTimer extends PlayerTimer implements Listener {
 	@Override
 	public void onEnable() {
 		this.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&a&lPvP Timer &r&ahas been activated! You have &c" + this.getFormattedTime() + "&a remaining!"));
-		System.out.println(this.getPlayer().getName());
 	}
 
 	@Override

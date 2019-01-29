@@ -23,21 +23,21 @@ public class PvPCommand implements CommandExecutor {
 			} else if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("enable")) {
 					//checks if the player has a pvp timer and removes it if they do
-					for (Timer timer : HCF.getInstance().getTimerHandler().getTimersFromPlayer(player)) {
-						if (timer instanceof PvPTimer) {
-							HCF.getInstance().getTimerHandler().remove(timer);
-							player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eYour PvP Timer has been removed! &a&lGood luck!"));
-							return true;
-						}
+					if (HCF.getInstance().getTimerHandler().getTimer(player, PvPTimer.class) != null) {
+						Timer timer = HCF.getInstance().getTimerHandler().getTimer(player, PvPTimer.class);
+						HCF.getInstance().getTimerHandler().remove(timer);
+						player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lPvP Timer &r&chas been deactivated!"));
+						return true;
 					}
 					player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou don't have a PvP Timer!"));
 				} else if (args[0].equalsIgnoreCase("time")) {
 					//checks if the player has a pvp timer and if they do messages them how much time remains
-					for (Timer timer : HCF.getInstance().getTimerHandler().getTimersFromPlayer(player)) {
-						if (timer instanceof PvPTimer) {
-							player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eYour PvP Timer has &c" + timer.getFormattedTime() + "&e remaining."));
-						}
+					if (HCF.getInstance().getTimerHandler().getTimer(player, PvPTimer.class) != null) {
+						Timer timer = HCF.getInstance().getTimerHandler().getTimer(player, PvPTimer.class);
+						player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eYour PvP Timer has &c" + timer.getFormattedTime() + "&e remaining."));
+						return true;
 					}
+					player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou don't have a PvP Timer!"));
 				} else {
 					helpMessage(player);
 				}
